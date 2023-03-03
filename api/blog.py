@@ -15,15 +15,20 @@ headers = {
 
 
 class handler(BaseHTTPRequestHandler):
-    def blog(self):
+
+    def do_GET(self):
         self.send_response(200)
         self.send_header('Content-type', 'text/plain')
         self.end_headers()
-        url = 'https://blog.code520.com.cn/search.xml'
-        response = requests.get(
-            url, headers=headers, verify=False)
-        if response.status_code == 200:
-            xp = xmltodict.parse(response.text)
-            data = json.dumps(xp)
-            self.wfile.write(data)
-            return
+        self.wfile.write(blog())
+        return
+
+
+def blog():
+    url = 'https://blog.code520.com.cn/search.xml'
+    response = requests.get(
+        url, headers=headers, verify=False)
+    if response.status_code == 200:
+        xp = xmltodict.parse(response.text)
+        data = json.dumps(xp)
+        return data
