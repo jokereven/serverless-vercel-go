@@ -14,20 +14,18 @@ headers = {
 }
 
 
-def blog():
-    url = 'https://blog.code520.com.cn/search.xml'
-    response = requests.get(
-        url, headers=headers, verify=False)
-    if response.status_code == 200:
-        xp = xmltodict.parse(response.text)
-        data = json.dumps(xp)
-        return data
-
-
 class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/plain')
-        self.end_headers()
-        self.wfile.write(blog())
-        return
+
+  def do_GET(self):
+    url = 'https://blog.code520.com.cn/search.xml'
+    response = requests.get(url)
+    if response.status_code == 200:
+      xp = xmltodict.parse(response.text)
+      data = json.dumps(xp)
+      self.send_response(200)
+      self.send_header(headers)
+      self.end_headers()
+      self.wfile.write(data.encode())
+    else:
+      self.send_response(500)
+      self.end_headers()
