@@ -14,16 +14,6 @@ headers = {
 }
 
 
-class handler(BaseHTTPRequestHandler):
-
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/plain')
-        self.end_headers()
-        self.wfile.write(blog())
-        return
-
-
 def blog():
     url = 'https://blog.code520.com.cn/search.xml'
     response = requests.get(
@@ -32,3 +22,12 @@ def blog():
         xp = xmltodict.parse(response.text)
         data = json.dumps(xp)
         return data
+
+
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/plain')
+        self.end_headers()
+        self.wfile.write(blog())
+        return
