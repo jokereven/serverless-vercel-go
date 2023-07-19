@@ -6,24 +6,32 @@ import (
 )
 
 type Response struct {
-    Message string `json:"message"`
+    ErrorCode int     `json:"errorCode"`
+    Data      Data    `json:"data"`
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
-    resp, err := http.Get("https://api.nftgo.io/api/v1/asset/eth-usd-rate")
+type Data struct {
+    Rate float64 `json:"rate"`
+}
+
+func GetEthUsdRate(w http.ResponseWriter, r *http.Request) (float64, error) {
+    client := &http.Client{}
+    req, err := http.NewRequest("GET", "https://api.nftgo.io/api/v1/asset/eth-usd-rate", nil)
     if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
+        return 0, err
+    }
+    resp, err := client.Do(req)
+    if err != nil {
+        return 0, err
     }
     defer resp.Body.Close()
-
-    var response Response
-    if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return 0, err
     }
-
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-    json.NewEncoder(w).Encode(response)
+    var response Response
+    if err := json.Unmarshal(body, &response); err != nil {
+        return 0, err
+    }
+    return response.Data.Rate, nil
 }
