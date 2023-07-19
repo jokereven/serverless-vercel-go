@@ -1,8 +1,9 @@
 package nftgo
 
 import (
-    "encoding/json"
-    "net/http"
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
 )
 
 type Response struct {
