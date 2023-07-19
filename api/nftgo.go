@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
     "fmt"
@@ -6,20 +6,20 @@ import (
     "io/ioutil"
 )
 
-func main() {
+func GetEthUsdRate() (string, error) {
     client := &http.Client{}
     req, err := http.NewRequest("GET", "https://api.nftgo.io/api/v1/asset/eth-usd-rate", nil)
     if err != nil {
-        panic(err)
+        return "", err
     }
     resp, err := client.Do(req)
     if err != nil {
-        panic(err)
+        return "", err
     }
     defer resp.Body.Close()
     body, err := ioutil.ReadAll(resp.Body)
     if err != nil {
-        panic(err)
+        return "", err
     }
-    fmt.Fprintf(string(body))
+    return string(body), nil
 }
