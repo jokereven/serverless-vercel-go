@@ -1,8 +1,7 @@
-package handler
+package nftgo
 
 import (
     "encoding/json"
-    "fmt"
     "net/http"
 )
 
