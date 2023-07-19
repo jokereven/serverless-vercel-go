@@ -1,25 +1,30 @@
-package api
+package handler
 
 import (
+    "encoding/json"
     "fmt"
     "net/http"
-    "io/ioutil"
 )
 
-func GetEthUsdRate() (string, error) {
-    client := &http.Client{}
-    req, err := http.NewRequest("GET", "https://api.nftgo.io/api/v1/asset/eth-usd-rate", nil)
+type Response struct {
+    Message string `json:"message"`
+}
+
+func Handler(w http.ResponseWriter, r *http.Request) {
+    resp, err := http.Get("https://api.nftgo.io/api/v1/asset/eth-usd-rate")
     if err != nil {
-        return "", err
-    }
-    resp, err := client.Do(req)
-    if err != nil {
-        return "", err
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
     }
     defer resp.Body.Close()
-    body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        return "", err
+
+    var response Response
+    if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
     }
-    return string(body), nil
+
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(response)
 }
