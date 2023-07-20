@@ -7,10 +7,10 @@ export default function handler(request, response) {
 
   axios.get('https://jsonplaceholder.typicode.com/todos/1')
     .then(res => {
-		return response.status(200).end(`Hello ${name}, ${res.data}!`);
+        return response.status(200).end(`Hello ${name}, ${res.data}!`);
     })
     .catch(err => {
       console.error(err);
-		return response.status(200).end(`Hello ${name}!, ${res.data}`);
+        return response.status(200).end(`Hello ${name}!, ${err.message}`);
     });
 }
