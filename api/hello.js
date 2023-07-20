@@ -1,16 +1,32 @@
-import axios from 'axios';
+const http = require('http');
 
-export default function handler(request, response) {
-  // api/[name].js -> /api/lee
-  // request.query.name -> "lee"
+function handler(request, response) {
   const { name } = request.query;
 
-  axios.get('https://jsonplaceholder.typicode.com/todos/1')
-    .then(res => {
-        return response.status(200).end(`Hello ${name}, ${res.data}!`);
-    })
-    .catch(err => {
-      console.error(err);
-        return response.status(200).end(`Hello ${name}!, ${err.message}`);
+  const options = {
+    hostname: 'jsonplaceholder.typicode.com',
+    path: '/todos/1',
+    method: 'GET'
+  };
+
+  const req = http.request(options, res => {
+    let data = '';
+
+    res.on('data', chunk => {
+      data += chunk;
     });
+
+    res.on('end', () => {
+      return response.status(200).end(`Hello ${name}, ${data}!`);
+    });
+  });
+
+  req.on('error', error => {
+    console.error(error);
+    return response.status(500).end('Internal Server Error');
+  });
+
+  req.end();
 }
+
+module.exports = handler;
